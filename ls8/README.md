@@ -60,7 +60,11 @@ but you'll have to implement those three above instructions first!
 ## Step 0: IMPORTANT: inventory what is here!
 
 * Make a list of files here.
+    - 3 files, cpu, ls8 and asm
 * Write a short 3-10-word description of what each file does.
+    - The cpu is where most operations will occur. Such as the reading, writing and printing.
+    - The ls8 file is where everything is held. It's our container for our CPU and the feautres as well as inputs
+    - The asm file is the compiler toassembly code. It takes LS-8 assembler source and converts it into `.ls8` "binary" files.
 * Note what has been implemented, and what hasn't.
 * Read this whole file.
 * Skim the spec.
