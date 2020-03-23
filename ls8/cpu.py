@@ -69,6 +69,13 @@ class CPU:
             print(" %02X" % self.reg[i], end='')
 
         print()
+
+    def ldi(self, reg_a, data):
+        self.reg[reg_a] = data
+
+    def prn(self, reg):
+        print(self.reg[reg])
+
     def run(self):
         """Run the CPU."""
         # set running to be True
@@ -79,12 +86,26 @@ class CPU:
             operand_a = self.ram_read(self.pc + 1)
             operand_b = self.ram_read(self.pc + 2)
 
-            # if IR is `HLT` (1)
+            # if IR = `HLT` (1)
             if IR == 1:
                 # Halt the CPU (and exit the emulator).
                 print("Halting operations")
                 running = False
                 break
-
-
-        pass
+            # else if IR = 'PRN' (71)
+            elif IR == 71:
+                # call self.prn on operand_a (the next item)
+                self.prn(operand_a)
+                # increment self.pc by 2
+                self.pc += 2
+            # else if IR = 'LDI' (130)
+            elif IR == 130:
+                # call self.ldi on both operand_a and operand_b
+                self.ldi(operand_a, operand_b)
+                # increment self.pc by 3
+                self.pc += 3
+            # otherwise
+            else:
+                # print an Invalid Instruction message amd set running to False to exit
+                print("Invalid Instruction")
+                running = False
