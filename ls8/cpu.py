@@ -14,12 +14,6 @@ class CPU:
         # add pc to 0
         self.pc = 0
     
-    
-    def ram_read(self):
-        pass
-    def ram_write(self):
-        pass
-    
     def load(self):
         """Load a program into memory."""
 
@@ -41,6 +35,11 @@ class CPU:
             self.ram[address] = instruction
             address += 1
 
+    def ram_read(self, adress):
+        return self.ram[adress]
+
+    def ram_write(self, value, address):
+        self.ram[address] = value
 
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
