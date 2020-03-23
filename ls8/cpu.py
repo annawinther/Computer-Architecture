@@ -69,7 +69,22 @@ class CPU:
             print(" %02X" % self.reg[i], end='')
 
         print()
-
     def run(self):
         """Run the CPU."""
+        # set running to be True
+        running = True
+        while running:
+        # needs to read mem address stores in register PC and store in IR - local variable
+            IR = self.ram_read(self.pc)
+            operand_a = self.ram_read(self.pc + 1)
+            operand_b = self.ram_read(self.pc + 2)
+
+            # if IR is `HLT` (1)
+            if IR == 1:
+                # Halt the CPU (and exit the emulator).
+                print("Halting operations")
+                running = False
+                break
+
+
         pass
