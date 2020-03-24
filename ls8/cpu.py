@@ -46,9 +46,15 @@ class CPU:
 
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
+
+        elif op == "MUL":
+            self.reg[reg_a] *= self.reg[reg_b]
         #elif op == "SUB": etc
         else:
             raise Exception("Unsupported ALU operation")
+        # add MUL operation
+        # Multiply the values in two registers together and store the result in registerA.
+       
 
     def trace(self):
         """
@@ -103,6 +109,12 @@ class CPU:
                 # call self.ldi on both operand_a and operand_b
                 self.ldi(operand_a, operand_b)
                 # increment self.pc by 3
+                self.pc += 3
+            # else if IR == 'MUL' (162)
+            elif IR == 0b10100010:
+                # MUL is the resposibility of the ALU 
+                # Here it calls the alu() function passing in operant_a and operand_b to get the work done
+                self.alu("MUL", operand_a, operand_b)
                 self.pc += 3
             # otherwise
             else:
