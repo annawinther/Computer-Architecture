@@ -87,19 +87,19 @@ class CPU:
             operand_b = self.ram_read(self.pc + 2)
 
             # if IR = `HLT` (1)
-            if IR == 1:
+            if IR == 0b00000001:
                 # Halt the CPU (and exit the emulator).
                 print("Halting operations")
                 running = False
                 break
             # else if IR = 'PRN' (71)
-            elif IR == 71:
+            elif IR == 0b01000111:
                 # call self.prn on operand_a (the next item)
                 self.prn(operand_a)
                 # increment self.pc by 2
                 self.pc += 2
             # else if IR = 'LDI' (130)
-            elif IR == 130:
+            elif IR == 0b10000010:
                 # call self.ldi on both operand_a and operand_b
                 self.ldi(operand_a, operand_b)
                 # increment self.pc by 3

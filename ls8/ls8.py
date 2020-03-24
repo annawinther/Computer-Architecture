@@ -9,3 +9,5 @@ cpu = CPU()
 
 cpu.load()
 cpu.run()
+
+print(sys.argv[0])
