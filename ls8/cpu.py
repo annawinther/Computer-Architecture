@@ -13,7 +13,19 @@ class CPU:
         self.ram = [0] * 256
         # add pc to 0
         self.pc = 0
+
+        self.branchtable = {}
+        self.branch_operations()
     
+    def LDI(self, reg_a, data):
+        self.reg[reg_a] = data
+        self.pc += 3
+
+    def PRN(self, reg):
+        print(self.reg[reg])
+        self.pc += 2
+
+
     def load(self, program):
         """Load a program into memory."""
 
@@ -34,6 +46,9 @@ class CPU:
         for instruction in program:
             self.ram[address] = instruction
             address += 1
+
+    def branch_operations(self):
+        pass
 
     def ram_read(self, adress):
         return self.ram[adress]
@@ -76,12 +91,6 @@ class CPU:
 
         print()
 
-    def ldi(self, reg_a, data):
-        self.reg[reg_a] = data
-
-    def prn(self, reg):
-        print(self.reg[reg])
-
     def run(self):
         """Run the CPU."""
         # set running to be True
@@ -98,26 +107,28 @@ class CPU:
                 print("Halting operations")
                 running = False
                 break
+            elif IR not in self.branchtable:
+                print("Invalid Instruction")
+                running = False
             # else if IR = 'PRN' (71)
-            elif IR == 0b01000111:
-                # call self.prn on operand_a (the next item)
-                self.prn(operand_a)
-                # increment self.pc by 2
-                self.pc += 2
-            # else if IR = 'LDI' (130)
-            elif IR == 0b10000010:
-                # call self.ldi on both operand_a and operand_b
-                self.ldi(operand_a, operand_b)
-                # increment self.pc by 3
-                self.pc += 3
+            # elif IR == 0b01000111:
+            #     # call self.prn on operand_a (the next item)
+            #     self.prn(operand_a)
+            #     # increment self.pc by 2
+            #     self.pc += 2
+            # # else if IR = 'LDI' (130)
+            # elif IR == 0b10000010:
+            #     # call self.ldi on both operand_a and operand_b
+            #     self.ldi(operand_a, operand_b)
+            #     # increment self.pc by 3
+            #     self.pc += 3
             # else if IR == 'MUL' (162)
-            elif IR == 0b10100010:
-                # MUL is the resposibility of the ALU 
-                # Here it calls the alu() function passing in operant_a and operand_b to get the work done
-                self.alu("MUL", operand_a, operand_b)
-                self.pc += 3
+            # elif IR == 0b10100010:
+            #     # MUL is the resposibility of the ALU 
+            #     # Here it calls the alu() function passing in operant_a and operand_b to get the work done
+            #     self.alu("MUL", operand_a, operand_b)
+            #     self.pc += 3
             # otherwise
             else:
                 # print an Invalid Instruction message amd set running to False to exit
-                print("Invalid Instruction")
-                running = False
+                self.branchtable[IR](operand_a, operand_b)
