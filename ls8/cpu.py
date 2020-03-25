@@ -13,8 +13,9 @@ class CPU:
         self.ram = [0] * 256
         # add pc to 0
         self.pc = 0
-
+        # initialise the branchtable to empty dictionary
         self.branchtable = {}
+        # set the branchtable operations function
         self.branch_operations()
 
     ### Branch Operations ###
@@ -25,6 +26,7 @@ class CPU:
     def PRN(self, a, b):
         print(self.reg[a])
         self.pc += 2
+
     ### AUL Operations ###
     # MUL is the resposibility of the ALU 
     # Here it calls the alu() function passing in operant_a and operand_b to get the work done
@@ -57,13 +59,13 @@ class CPU:
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
 
-        elif op == "MUL":
-            self.reg[reg_a] *= self.reg[reg_b]
-        #elif op == "SUB": etc
-        else:
-            raise Exception("Unsupported ALU operation")
         # add MUL operation
         # Multiply the values in two registers together and store the result in registerA.
+        elif op == "MUL":
+            self.reg[reg_a] *= self.reg[reg_b]
+        # elif op == "SUB": etc
+        else:
+            raise Exception("Unsupported ALU operation")
        
 
     def trace(self):
@@ -102,28 +104,12 @@ class CPU:
                 print("Halting operations")
                 running = False
                 break
+            # else if IR is not in the branchtable 
             elif IR not in self.branchtable:
+                # print an Invalid Instruction message amd set running to False to exit
                 print("Invalid Instruction")
                 running = False
-            # else if IR = 'PRN' (71)
-            # elif IR == 0b01000111:
-            #     # call self.prn on operand_a (the next item)
-            #     self.prn(operand_a)
-            #     # increment self.pc by 2
-            #     self.pc += 2
-            # # else if IR = 'LDI' (130)
-            # elif IR == 0b10000010:
-            #     # call self.ldi on both operand_a and operand_b
-            #     self.ldi(operand_a, operand_b)
-            #     # increment self.pc by 3
-            #     self.pc += 3
-            # else if IR == 'MUL' (162)
-            # elif IR == 0b10100010:
-            #     # MUL is the resposibility of the ALU 
-            #     # Here it calls the alu() function passing in operant_a and operand_b to get the work done
-                # self.alu("MUL", operand_a, operand_b)
-                # self.pc += 3
             # otherwise
             else:
-                # print an Invalid Instruction message amd set running to False to exit
+                # use the branchtable to run the correct operation
                 self.branchtable[IR](operand_a, operand_b)
