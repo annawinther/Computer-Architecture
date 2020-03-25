@@ -16,39 +16,34 @@ class CPU:
 
         self.branchtable = {}
         self.branch_operations()
-    
+
+    ### Branch Operations ###
     def LDI(self, reg_a, data):
         self.reg[reg_a] = data
         self.pc += 3
 
-    def PRN(self, reg):
-        print(self.reg[reg])
+    def PRN(self, a, b):
+        print(self.reg[a])
         self.pc += 2
-
+    ### AUL Operations ###
+    # MUL is the resposibility of the ALU 
+    # Here it calls the alu() function passing in operant_a and operand_b to get the work done
+    def MUL(self, a, b):
+        self.alu("MUL", a, b)
+        self.pc += 3
 
     def load(self, program):
         """Load a program into memory."""
 
         address = 0
-
-        # For now, we've just hardcoded a program:
-
-        # program = [
-        #     # From print8.ls8
-        #     0b10000010, # LDI R0,8
-        #     0b00000000,
-        #     0b00001000,
-        #     0b01000111, # PRN R0
-        #     0b00000000,
-        #     0b00000001, # HLT
-        # ]
-
         for instruction in program:
             self.ram[address] = instruction
             address += 1
 
     def branch_operations(self):
-        pass
+        self.branchtable[0b10000010] = self.LDI
+        self.branchtable[0b01000111] = self.PRN
+        self.branchtable[0b10100010] = self.MUL
 
     def ram_read(self, adress):
         return self.ram[adress]
@@ -126,8 +121,8 @@ class CPU:
             # elif IR == 0b10100010:
             #     # MUL is the resposibility of the ALU 
             #     # Here it calls the alu() function passing in operant_a and operand_b to get the work done
-            #     self.alu("MUL", operand_a, operand_b)
-            #     self.pc += 3
+                # self.alu("MUL", operand_a, operand_b)
+                # self.pc += 3
             # otherwise
             else:
                 # print an Invalid Instruction message amd set running to False to exit
