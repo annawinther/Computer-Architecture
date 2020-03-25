@@ -17,6 +17,17 @@ class CPU:
         self.branchtable = {}
         # set the branchtable operations function
         self.branch_operations()
+        # add a stack pointer (SP) and set to empty at adress 0xF4
+        self.stack_pointer = 0xF4
+
+
+    def load(self, program):
+        """Load a program into memory."""
+
+        address = 0
+        for instruction in program:
+            self.ram[address] = instruction
+            address += 1
 
     ### Branch Operations ###
     def LDI(self, reg_a, data):
@@ -33,19 +44,35 @@ class CPU:
     def MUL(self, a, b):
         self.alu("MUL", a, b)
         self.pc += 3
-
-    def load(self, program):
-        """Load a program into memory."""
-
-        address = 0
-        for instruction in program:
-            self.ram[address] = instruction
-            address += 1
+    
+    ### Stack Operations ###
+    # Push the value in the given register on the stack.
+    def PUSH(self, a, b):
+        # Decrement the `SP`
+        self.stack_pointer -= 1
+        # Copy the value in the given register to the address pointed to by sp
+        val = self.reg[a]
+        # Insert value onto stack
+        self.ram_write(val, self.stack_pointer)
+        self.pc += 2
+    
+    # Pop the value at the top of the stack into the given register
+    def POP(self, a, b):
+        # Copy the value from the address pointed to by `SP` to the given register.
+        stack_value = self.ram[self.stack_pointer]
+        self.reg[a] = stack_value
+        # We cannot move past the top of the stack, so once we reach 0xFF, we shouldn't increase the pointer
+        if self.stack_pointer != 0xFF:
+            # Increment `SP`
+            self.stack_pointer += 1
+        self.pc += 2
 
     def branch_operations(self):
         self.branchtable[0b10000010] = self.LDI
         self.branchtable[0b01000111] = self.PRN
         self.branchtable[0b10100010] = self.MUL
+        self.branchtable[0b01000110] = self.POP
+        self.branchtable[0b01000101] = self.PUSH
 
     def ram_read(self, adress):
         return self.ram[adress]
