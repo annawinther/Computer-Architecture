@@ -39,6 +39,11 @@ class CPU:
         self.pc += 2
 
     ### AUL Operations ###
+    # Add the value in two registers and store the result in registerA.
+    def ADD(self, a, b):
+        self.alu("ADD", a, b)
+        self.pc += 3
+        
     # MUL is the resposibility of the ALU 
     # Here it calls the alu() function passing in operant_a and operand_b to get the work done
     def MUL(self, a, b):
@@ -75,7 +80,7 @@ class CPU:
         self.stack_pointer -= 1
         # store return address (self.pc + 2) in stack (return address is the next instruction address)
         return_adr = self.pc + 2
-        self.ram_write(self.stack_pointer, return_adr)
+        self.ram_write(return_adr, self.stack_pointer)
         # then move the pc to the subroutine address
         self.pc = self.reg[a]
     
@@ -91,6 +96,7 @@ class CPU:
         self.branchtable[0b10000010] = self.LDI
         self.branchtable[0b01000111] = self.PRN
         self.branchtable[0b10100010] = self.MUL
+        self.branchtable[0b10100000] = self.ADD
         self.branchtable[0b01000110] = self.POP
         self.branchtable[0b01000101] = self.PUSH
         self.branchtable[0b01010000] = self.CALL
