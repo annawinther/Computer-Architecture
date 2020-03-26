@@ -67,6 +67,21 @@ class CPU:
             self.stack_pointer += 1
         self.pc += 2
 
+    # Calls a subroutine (function) at the address stored in the register. (01010000)
+    def CALL(self, a, b):
+        # The address of the ***instruction*** _directly after_ `CALL` is
+        # pushed onto the stack. This allows us to return to where we left off when the subroutine finishes executing.
+        # The PC is set to the address stored in the given register. We jump to that location in RAM and execute the first instruction in the subroutine. The PC can move forward or backwards from its current location
+        pass
+    
+    # Return from subroutine. (00010001)
+    def RET(self, a, b):
+        # Pop the value from the top of the stack and store it in self.pc.
+        # pop return value from the stack and store it in self.pc
+        # so the next cycle will go from there
+        pass
+
+
     def branch_operations(self):
         self.branchtable[0b10000010] = self.LDI
         self.branchtable[0b01000111] = self.PRN
