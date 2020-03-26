@@ -72,14 +72,19 @@ class CPU:
         # The address of the ***instruction*** _directly after_ `CALL` is
         # pushed onto the stack. This allows us to return to where we left off when the subroutine finishes executing.
         # The PC is set to the address stored in the given register. We jump to that location in RAM and execute the first instruction in the subroutine. The PC can move forward or backwards from its current location
-        pass
+        self.stack_pointer -= 1
+        # store return address (self.pc + 2) in stack (return address is the next instruction address)
+        return_adr = self.pc + 2
+        self.ram_write(self.stack_pointer, return_adr)
+        # then move the pc to the subroutine address
+        self.pc = self.reg[a]
     
     # Return from subroutine. (00010001)
     def RET(self, a, b):
         # Pop the value from the top of the stack and store it in self.pc.
-        # pop return value from the stack and store it in self.pc
+        stack_value = self.ram[self.stack_pointer]
         # so the next cycle will go from there
-        pass
+        self.pc = stack_value
 
 
     def branch_operations(self):
@@ -88,6 +93,8 @@ class CPU:
         self.branchtable[0b10100010] = self.MUL
         self.branchtable[0b01000110] = self.POP
         self.branchtable[0b01000101] = self.PUSH
+        self.branchtable[0b01010000] = self.CALL
+        self.branchtable[0b00010001] = self.RET
 
     def ram_read(self, adress):
         return self.ram[adress]
@@ -149,7 +156,7 @@ class CPU:
             # else if IR is not in the branchtable 
             elif IR not in self.branchtable:
                 # print an Invalid Instruction message amd set running to False to exit
-                print("Invalid Instruction")
+                print(f"Invalid Instruction {IR}")
                 running = False
             # otherwise
             else:
