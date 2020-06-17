@@ -14,22 +14,22 @@ class CPU:
         # add pc to 0
         self.pc = 0
     
-    def load(self):
+    def load(self, program):
         """Load a program into memory."""
 
         address = 0
 
         # For now, we've just hardcoded a program:
 
-        program = [
-            # From print8.ls8
-            0b10000010, # LDI R0,8
-            0b00000000,
-            0b00001000,
-            0b01000111, # PRN R0
-            0b00000000,
-            0b00000001, # HLT
-        ]
+        # program = [
+        #     # From print8.ls8
+        #     0b10000010, # LDI R0,8
+        #     0b00000000,
+        #     0b00001000,
+        #     0b01000111, # PRN R0
+        #     0b00000000,
+        #     0b00000001, # HLT
+        # ]
 
         for instruction in program:
             self.ram[address] = instruction
@@ -46,9 +46,15 @@ class CPU:
 
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
+
+        elif op == "MUL":
+            self.reg[reg_a] *= self.reg[reg_b]
         #elif op == "SUB": etc
         else:
             raise Exception("Unsupported ALU operation")
+        # add MUL operation
+        # Multiply the values in two registers together and store the result in registerA.
+       
 
     def trace(self):
         """
@@ -87,22 +93,28 @@ class CPU:
             operand_b = self.ram_read(self.pc + 2)
 
             # if IR = `HLT` (1)
-            if IR == 1:
+            if IR == 0b00000001:
                 # Halt the CPU (and exit the emulator).
                 print("Halting operations")
                 running = False
                 break
             # else if IR = 'PRN' (71)
-            elif IR == 71:
+            elif IR == 0b01000111:
                 # call self.prn on operand_a (the next item)
                 self.prn(operand_a)
                 # increment self.pc by 2
                 self.pc += 2
             # else if IR = 'LDI' (130)
-            elif IR == 130:
+            elif IR == 0b10000010:
                 # call self.ldi on both operand_a and operand_b
                 self.ldi(operand_a, operand_b)
                 # increment self.pc by 3
+                self.pc += 3
+            # else if IR == 'MUL' (162)
+            elif IR == 0b10100010:
+                # MUL is the resposibility of the ALU 
+                # Here it calls the alu() function passing in operant_a and operand_b to get the work done
+                self.alu("MUL", operand_a, operand_b)
                 self.pc += 3
             # otherwise
             else:
