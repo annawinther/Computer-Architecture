@@ -1,7 +1,7 @@
 """CPU functionality."""
 
 import sys
-
+ 
 class CPU:
     """Main CPU class."""
 
@@ -39,6 +39,11 @@ class CPU:
         self.pc += 2
 
     ### AUL Operations ###
+    # Add the value in two registers and store the result in registerA.
+    def ADD(self, a, b):
+        self.alu("ADD", a, b)
+        self.pc += 3
+        
     # MUL is the resposibility of the ALU 
     # Here it calls the alu() function passing in operant_a and operand_b to get the work done
     def MUL(self, a, b):
@@ -67,12 +72,35 @@ class CPU:
             self.stack_pointer += 1
         self.pc += 2
 
+    # Calls a subroutine (function) at the address stored in the register. (01010000)
+    def CALL(self, a, b):
+        # The address of the ***instruction*** _directly after_ `CALL` is
+        # pushed onto the stack. This allows us to return to where we left off when the subroutine finishes executing.
+        # The PC is set to the address stored in the given register. We jump to that location in RAM and execute the first instruction in the subroutine. The PC can move forward or backwards from its current location
+        self.stack_pointer -= 1
+        # store return address (self.pc + 2) in stack (return address is the next instruction address)
+        return_adr = self.pc + 2
+        self.ram_write(return_adr, self.stack_pointer)
+        # then move the pc to the subroutine address
+        self.pc = self.reg[a]
+    
+    # Return from subroutine. (00010001)
+    def RET(self, a, b):
+        # Pop the value from the top of the stack and store it in self.pc.
+        stack_value = self.ram[self.stack_pointer]
+        # so the next cycle will go from there
+        self.pc = stack_value
+
+
     def branch_operations(self):
         self.branchtable[0b10000010] = self.LDI
         self.branchtable[0b01000111] = self.PRN
         self.branchtable[0b10100010] = self.MUL
+        self.branchtable[0b10100000] = self.ADD
         self.branchtable[0b01000110] = self.POP
         self.branchtable[0b01000101] = self.PUSH
+        self.branchtable[0b01010000] = self.CALL
+        self.branchtable[0b00010001] = self.RET
 
     def ram_read(self, adress):
         return self.ram[adress]
@@ -134,7 +162,7 @@ class CPU:
             # else if IR is not in the branchtable 
             elif IR not in self.branchtable:
                 # print an Invalid Instruction message amd set running to False to exit
-                print("Invalid Instruction")
+                print(f"Invalid Instruction {IR}")
                 running = False
             # otherwise
             else:

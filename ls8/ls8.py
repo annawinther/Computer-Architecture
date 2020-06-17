@@ -38,5 +38,3 @@ cpu = CPU()
 
 cpu.load(program)
 cpu.run()
-
-print(sys.argv)
