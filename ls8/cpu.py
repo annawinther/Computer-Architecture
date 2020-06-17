@@ -7,8 +7,13 @@ class CPU:
 
     def __init__(self):
         """Construct a new CPU."""
-        pass
-
+        # reg is 8 
+        self.reg = [0] * 8
+        # ram is 256
+        self.ram = [0] * 256
+        # add pc to 0
+        self.pc = 0
+    
     def load(self):
         """Load a program into memory."""
 
@@ -30,6 +35,11 @@ class CPU:
             self.ram[address] = instruction
             address += 1
 
+    def ram_read(self, adress):
+        return self.ram[adress]
+
+    def ram_write(self, value, address):
+        self.ram[address] = value
 
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
@@ -60,6 +70,42 @@ class CPU:
 
         print()
 
+    def ldi(self, reg_a, data):
+        self.reg[reg_a] = data
+
+    def prn(self, reg):
+        print(self.reg[reg])
+
     def run(self):
         """Run the CPU."""
-        pass
+        # set running to be True
+        running = True
+        while running:
+        # needs to read mem address stores in register PC and store in IR - local variable
+            IR = self.ram_read(self.pc)
+            operand_a = self.ram_read(self.pc + 1)
+            operand_b = self.ram_read(self.pc + 2)
+
+            # if IR = `HLT` (1)
+            if IR == 1:
+                # Halt the CPU (and exit the emulator).
+                print("Halting operations")
+                running = False
+                break
+            # else if IR = 'PRN' (71)
+            elif IR == 71:
+                # call self.prn on operand_a (the next item)
+                self.prn(operand_a)
+                # increment self.pc by 2
+                self.pc += 2
+            # else if IR = 'LDI' (130)
+            elif IR == 130:
+                # call self.ldi on both operand_a and operand_b
+                self.ldi(operand_a, operand_b)
+                # increment self.pc by 3
+                self.pc += 3
+            # otherwise
+            else:
+                # print an Invalid Instruction message amd set running to False to exit
+                print("Invalid Instruction")
+                running = False
